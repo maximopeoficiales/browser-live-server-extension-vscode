@@ -34,9 +34,8 @@ export function activate(context: vscode.ExtensionContext) {
 }
 function getCurrentPath() {
 	const editor = window.activeTextEditor;
-	const pathReal = editor?.document.uri?.path;
-	console.log({ pathReal });
-	return pathReal;
+	const path = workspace.getWorkspaceFolder(editor?.document.uri!);
+	return path?.uri.path;
 }
 
 

@@ -9,17 +9,13 @@ export class BrowserSync {
 
     public start() {
         if (this.pathReal !== "") {
-            if (this.bs) {
-                this.bs.cleanup();
-            }
-
+            this.stop();
             this.bs = browserSync.create().init({
                 server: {
-                    baseDir: this.pathReal.replace("index.html", ""),
+                    baseDir: this.pathReal
                 },
                 files: "css/*.css",
                 watch: true,
-
             }, function (err, bs) {
                 console.log({ bs });
             });
