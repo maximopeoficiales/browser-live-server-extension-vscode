@@ -13,11 +13,13 @@ export function activate(context: vscode.ExtensionContext) {
 
 	vscode.window.showInformationMessage(`Se ha activado la extension "browser-live-server"`);
 
-	let disposableStart = vscode.commands.registerCommand('browser-live-server.startServer', () => {
+	let disposableStart = vscode.commands.registerCommand('browser-live-server.startServer', async () => {
 		const pathReal = getCurrentPath();
 		if (pathReal) {
-			browserSync.pathReal = pathReal;
-			browserSync.start();
+
+			await browserSync.start(pathReal);
+			console.log(browserSync.urls);
+
 		}
 
 		vscode.window.showInformationMessage(`Se ha activado el servidor`);
