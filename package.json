@@ -1,5 +1,10 @@
 {
 	"name": "browser-live-server",
+	"publisher": "maximopeoficiales",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/maximopeoficiales/browser-live-server-extension-vscode.git"
+	},
 	"displayName": "browser-live-server",
 	"description": "Ejecuta de manera facil un servidor en tu entorno local para varios dispositivos.",
 	"version": "0.0.1",

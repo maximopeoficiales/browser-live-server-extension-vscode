@@ -28,9 +28,9 @@ export function activate(context: vscode.ExtensionContext) {
 		}, function (err, bs) {
 			console.log({ bs });
 		});
-		setInterval(() => {
-			bs.exit();
-		}, 5000);
+		// setInterval(() => {
+		// 	bs.exit();
+		// }, 5000);
 		// console.log({ info });
 
 
