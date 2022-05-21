@@ -9,12 +9,17 @@ export interface UrlBrowserSync {
 
 export class BrowserSync {
     bs!: browserSync.BrowserSyncInstance;
-    urls!: UrlBrowserSync;
+    urls: UrlBrowserSync = {
+        external: "",
+        local: "",
+        ui: "",
+        uiExternal: ""
+    };
     constructor() {
 
     }
 
-    public start(pathReal: string): Promise<void> {
+    public start(pathReal: string): Promise<browserSync.BrowserSyncInstance | Error> {
         return new Promise((resolve, reject) => {
             this.stop();
             this.bs = browserSync.create().init({
@@ -24,20 +29,25 @@ export class BrowserSync {
                 files: "css/*.css",
                 watch: true,
             }, (err, bs) => {
-                if (!err) {
+
+                if (err !== null) {
                     console.error(err);
-                    reject(null);
-                } else {
-                    const urls = bs.getOption('urls');
-                    this.urls.local = urls.get("local");
-                    this.urls.external = urls.get("external");
-                    this.urls.ui = urls.get("ui");
-                    this.urls.uiExternal = urls.get("ui-external");
-                    this.bs = bs;
-                    resolve();
+                    resolve(err);
                 }
+
+                const urls = bs.getOption('urls');
+                const urlsArray = Array.from(urls.values()) as string[];
+                this.urls.local = urlsArray[0];
+                this.urls.external = urlsArray[1];
+                this.urls.ui = urlsArray[2];
+                const ipUi = this.urls.external.replace('http://', '');
+                const uiExternal = ipUi.split(":")[0];
+                const uiExternalPort = ipUi.split(":")[1];
+                this.urls.uiExternal = `http://${uiExternal}:${parseInt(uiExternalPort) + 1}`;
+                this.bs = bs;
+                resolve(bs);
             });
-        })
+        });
 
     }
 
