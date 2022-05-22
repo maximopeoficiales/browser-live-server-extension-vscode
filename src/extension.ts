@@ -39,7 +39,9 @@ export function deactivate() {
 const getCurrentPath = () => {
 	const editor = window.activeTextEditor;
 	const path = workspace.getWorkspaceFolder(editor?.document.uri!);
-	return path?.uri.path;
+	// console.log(path);
+	
+	return path?.uri.fsPath;
 };
 
 const showMessageWithUrls = (urls: UrlBrowserSync) => {
