@@ -23,9 +23,11 @@ export class Ngrok {
                 },
             });
             const api = ngrok.getApi();
-            const tunnels = await api!.listTunnels();
-            if (tunnels.tunnels.length > 0) {
-                this.url = tunnels.tunnels[0].public_url;
+            const { tunnels } = await api!.listTunnels();
+            // console.log(tunnels);
+
+            if (tunnels.length > 0) {
+                this.url = tunnels[0].public_url;
                 return { status: true, url: this.url, error: null };
             } else {
                 return { status: false, url: "", error: "La ejecucion de ngrok ha fallado al generar una url publica" };

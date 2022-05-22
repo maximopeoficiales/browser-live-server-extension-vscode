@@ -16,7 +16,9 @@
 	],
 	"activationEvents": [
 		"onCommand:browser-live-server.startServer",
-		"onCommand:browser-live-server.stopServer"
+		"onCommand:browser-live-server.stopServer",
+		"onCommand:browser-live-server.startServerNgrok",
+		"onCommand:browser-live-server.stopServerNgrok"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -28,6 +30,14 @@
 			{
 				"command": "browser-live-server.stopServer",
 				"title": "Detener Servidor Local - Externo"
+			},
+			{
+				"command": "browser-live-server.startServerNgrok",
+				"title": "Iniciar Servidor Ngrok"
+			},
+			{
+				"command": "browser-live-server.stopServerNgrok",
+				"title": "Detener Servidor Ngrok"
 			}
 		],
 		"menus": {
@@ -41,6 +51,16 @@
 					"when": "resourceLangId == html",
 					"command": "browser-live-server.stopServer",
 					"group": "browser-live-server@2"
+				},
+				{
+					"when": "resourceLangId == html",
+					"command": "browser-live-server.startServerNgrok",
+					"group": "browser-live-server@3"
+				},
+				{
+					"when": "resourceLangId == html",
+					"command": "browser-live-server.stopServerNgrok",
+					"group": "browser-live-server@4"
 				}
 			]
 		}

@@ -13,41 +13,58 @@ const token = "1gCdNWAG2JnSW1Ypo02jlvUOLi0_6Ek59WFqADYh7HzYyE12o";
 export function activate(context: vscode.ExtensionContext) {
 	console.log('Se ha activado la extension "browser-live-server');
 	// vscode.window.showInformationMessage(`Se ha activado la extension "browser-live-server"`);
-	let disposableStart = vscode.commands.registerCommand('browser-live-server.startServer', async () => {
-		const { pathWorkspace, pathUrlIndex } = getCurrentPath();
-		if (pathWorkspace) {
-			await browserSyncInstance.start(pathWorkspace, pathUrlIndex);
-			showMessageWithUrls(browserSyncInstance.urls);
-
-			const { status, error, url } = await ngrokIntance.start(token, browserSyncInstance.urls.port);
-			if (status) {
-				console.log({ url });
-
-				vscode.window.showInformationMessage(`El servidor para compartir es: ${url}`);
-			}
-
-
-		}
-
-		// vscode.window.showInformationMessage(`Se ha activado el servidor`);
+	let disposableStartBrowserSync = vscode.commands.registerCommand('browser-live-server.startServer', async () => {
+		await initBrowserSync();
 	});
-
-
-	let disposableStop = vscode.commands.registerCommand('browser-live-server.stopServer', () => {
-		browserSyncInstance.stop();
-		ngrokIntance.stop();
+	let disposableStopBrowserSync = vscode.commands.registerCommand('browser-live-server.stopServer', async () => {
+		await deactivate();
 		vscode.window.showWarningMessage(`Se ha detenido el servidor`);
 	});
 
-	context.subscriptions.push(disposableStart);
-	context.subscriptions.push(disposableStop);
+	let disposableStartNgrok = vscode.commands.registerCommand('browser-live-server.startServerNgrok', async () => {
+		await initBrowserSync(
+			async () => {
+				await initNgrok();
+			}
+		);
+
+	});
+
+	let disposableStopNgrok = vscode.commands.registerCommand('browser-live-server.stopServerNgrok', async () => {
+		await deactivate();
+		vscode.window.showWarningMessage(`Se ha detenido todos los servidores`);
+	});
+
+	context.subscriptions.push(disposableStartBrowserSync);
+	context.subscriptions.push(disposableStopBrowserSync);
+	context.subscriptions.push(disposableStartNgrok);
+	context.subscriptions.push(disposableStopNgrok);
 }
 
-export function deactivate() {
+export async function deactivate() {
 	browserSyncInstance.stop();
-	ngrokIntance.stop();
+	await ngrokIntance.stop();
 }
 
+const initBrowserSync = async (callback: () => void = () => { }) => {
+	const { pathWorkspace, pathUrlIndex } = getCurrentPath();
+	if (pathWorkspace) {
+		await browserSyncInstance.start(pathWorkspace, pathUrlIndex);
+		showMessageWithUrls(browserSyncInstance.urls);
+		callback();
+	}
+
+};
+const initNgrok = async () => {
+	const { status, error, url } = await ngrokIntance.start(token, browserSyncInstance.urls.port);
+	if (status) {
+		console.log({ url });
+		vscode.window.showInformationMessage(`El servidor para compartir es: ${url}`);
+	} else {
+		vscode.window.showErrorMessage(`Error al iniciar ngrok: ${error.message}`);
+	}
+
+};
 const getCurrentPath = () => {
 	const editor = window.activeTextEditor;
 	const pathCurrentDocument = editor?.document.uri!;
