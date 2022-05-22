@@ -19,13 +19,15 @@ export class BrowserSync {
 
     }
 
-    public start(pathReal: string): Promise<browserSync.BrowserSyncInstance | Error> {
+    public start(pathReal: string, indexUrl: string): Promise<browserSync.BrowserSyncInstance | Error> {
         return new Promise((resolve, reject) => {
             this.stop();
             this.bs = browserSync.create().init({
                 server: {
                     baseDir: pathReal
                 },
+                open: "external",
+                startPath: indexUrl,
                 files: "css/*.css",
                 watch: true,
             }, (err, bs) => {

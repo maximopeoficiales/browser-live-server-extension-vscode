@@ -11,9 +11,9 @@ export function activate(context: vscode.ExtensionContext) {
 	console.log('Se ha activado la extension "browser-live-server');
 	// vscode.window.showInformationMessage(`Se ha activado la extension "browser-live-server"`);
 	let disposableStart = vscode.commands.registerCommand('browser-live-server.startServer', async () => {
-		const pathReal = getCurrentPath();
-		if (pathReal) {
-			await browserSyncInstance.start(pathReal);
+		const { pathWorkspace, pathUrlIndex } = getCurrentPath();
+		if (pathWorkspace) {
+			await browserSyncInstance.start(pathWorkspace,pathUrlIndex);
 			showMessageWithUrls(browserSyncInstance.urls);
 
 
@@ -38,10 +38,16 @@ export function deactivate() {
 
 const getCurrentPath = () => {
 	const editor = window.activeTextEditor;
-	const path = workspace.getWorkspaceFolder(editor?.document.uri!);
-	// console.log(path);
-	
-	return path?.uri.fsPath;
+	const pathCurrentDocument = editor?.document.uri!;
+	const path = workspace.getWorkspaceFolder(pathCurrentDocument);
+	const pathWorkspace = path?.uri.fsPath;
+
+	const pathUrlIndex = pathCurrentDocument.fsPath.replace(pathWorkspace!, "");
+	console.log({ pathWorkspace, pathUrlIndex });
+
+	// const initalPathUrl = path.replace(pathWorkspace, '');
+
+	return { pathWorkspace, pathUrlIndex };
 };
 
 const showMessageWithUrls = (urls: UrlBrowserSync) => {
