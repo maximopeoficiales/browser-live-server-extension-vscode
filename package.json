@@ -23,13 +23,27 @@
 		"commands": [
 			{
 				"command": "browser-live-server.startServer",
-				"title": "Iniciar Servidor Local"
+				"title": "Iniciar Servidor Local - Externo"
 			},
 			{
 				"command": "browser-live-server.stopServer",
-				"title": "Detener Servidor Local"
+				"title": "Detener Servidor Local - Externo"
 			}
-		]
+		],
+		"menus": {
+			"editor/context": [
+				{
+					"when": "resourceLangId == html",
+					"command": "browser-live-server.startServer",
+					"group": "browser-live-server@1"
+				},
+				{
+					"when": "resourceLangId == html",
+					"command": "browser-live-server.stopServer",
+					"group": "browser-live-server@2"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "yarn run compile",
