@@ -3,9 +3,12 @@
 import * as vscode from 'vscode';
 import { window, workspace } from 'vscode';
 import { BrowserSync, UrlBrowserSync } from './BrowserSync';
+import { Ngrok } from './Ngrok';
 
 // this method is called when your extension is activated
 const browserSyncInstance = new BrowserSync();
+const ngrokIntance = new Ngrok();
+const token = "1gCdNWAG2JnSW1Ypo02jlvUOLi0_6Ek59WFqADYh7HzYyE12o";
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 	console.log('Se ha activado la extension "browser-live-server');
@@ -13,8 +16,15 @@ export function activate(context: vscode.ExtensionContext) {
 	let disposableStart = vscode.commands.registerCommand('browser-live-server.startServer', async () => {
 		const { pathWorkspace, pathUrlIndex } = getCurrentPath();
 		if (pathWorkspace) {
-			await browserSyncInstance.start(pathWorkspace,pathUrlIndex);
+			await browserSyncInstance.start(pathWorkspace, pathUrlIndex);
 			showMessageWithUrls(browserSyncInstance.urls);
+
+			const { status, error, url } = await ngrokIntance.start(token, browserSyncInstance.urls.port);
+			if (status) {
+				console.log({ url });
+
+				vscode.window.showInformationMessage(`El servidor para compartir es: ${url}`);
+			}
 
 
 		}
@@ -25,6 +35,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	let disposableStop = vscode.commands.registerCommand('browser-live-server.stopServer', () => {
 		browserSyncInstance.stop();
+		ngrokIntance.stop();
 		vscode.window.showWarningMessage(`Se ha detenido el servidor`);
 	});
 
@@ -34,6 +45,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() {
 	browserSyncInstance.stop();
+	ngrokIntance.stop();
 }
 
 const getCurrentPath = () => {

@@ -5,6 +5,7 @@ export interface UrlBrowserSync {
     external: string;
     ui: string;
     uiExternal: string;
+    port: number;
 }
 
 export class BrowserSync {
@@ -13,7 +14,8 @@ export class BrowserSync {
         external: "",
         local: "",
         ui: "",
-        uiExternal: ""
+        uiExternal: "",
+        port: 3000,
     };
     constructor() {
 
@@ -46,6 +48,7 @@ export class BrowserSync {
                 const uiExternal = ipUi.split(":")[0];
                 const uiExternalPort = ipUi.split(":")[1];
                 this.urls.uiExternal = `http://${uiExternal}:${parseInt(uiExternalPort) + 1}`;
+                this.urls.port = parseInt(this.urls.local.replace("http://", "").split(":")[1]);
                 this.bs = bs;
                 resolve(bs);
             });
