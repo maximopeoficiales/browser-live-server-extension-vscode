@@ -21,10 +21,6 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	let disposableStartNgrok = vscode.commands.registerCommand('browser-live-server.startServerNgrok', async () => {
-		const config = vscode.workspace.getConfiguration(undefined, null);
-		// retrieve values
-		// console.log({ config });
-
 		await initBrowserSync(
 			async () => {
 				await initNgrok();
