@@ -1,14 +1,13 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { window, workspace } from 'vscode';
 import { BrowserSync, UrlBrowserSync } from './BrowserSync';
 import { Ngrok } from './Ngrok';
 
 // this method is called when your extension is activated
 const browserSyncInstance = new BrowserSync();
 const ngrokIntance = new Ngrok();
-const token = "1gCdNWAG2JnSW1Ypo02jlvUOLi0_6Ek59WFqADYh7HzYyE12o";
+// const token = "1gCdNWAG2JnSW1Ypo02jlvUOLi0_6Ek59WFqADYh7HzYyE12o";
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 	console.log('Se ha activado la extension "browser-live-server');
@@ -22,6 +21,10 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	let disposableStartNgrok = vscode.commands.registerCommand('browser-live-server.startServerNgrok', async () => {
+		const config = vscode.workspace.getConfiguration(undefined, null);
+		// retrieve values
+		// console.log({ config });
+
 		await initBrowserSync(
 			async () => {
 				await initNgrok();
@@ -56,19 +59,28 @@ const initBrowserSync = async (callback: () => void = () => { }) => {
 
 };
 const initNgrok = async () => {
-	const { status, error, url } = await ngrokIntance.start(token, browserSyncInstance.urls.port);
-	if (status) {
-		console.log({ url });
-		vscode.window.showInformationMessage(`El servidor para compartir es: ${url}`);
+
+	const config = vscode.workspace.getConfiguration('browser-live-server');
+	const token = config.get("tokenNgrok") as string;
+	if (token !== "") {
+		console.log({ token });
+
+		const { status, error, url } = await ngrokIntance.start(token, browserSyncInstance.urls.port);
+		if (status) {
+			console.log({ url });
+			vscode.window.showInformationMessage(`El servidor para compartir es: ${url}`);
+		} else {
+			vscode.window.showErrorMessage(`Error al iniciar ngrok: ${error.message}`);
+		}
 	} else {
-		vscode.window.showErrorMessage(`Error al iniciar ngrok: ${error.message}`);
+		vscode.window.showErrorMessage(`Por favor configura el token de ngrok en el archivo de configuracion de la extension`);
 	}
 
 };
 const getCurrentPath = () => {
-	const editor = window.activeTextEditor;
+	const editor = vscode.window.activeTextEditor;
 	const pathCurrentDocument = editor?.document.uri!;
-	const path = workspace.getWorkspaceFolder(pathCurrentDocument);
+	const path = vscode.workspace.getWorkspaceFolder(pathCurrentDocument);
 	const pathWorkspace = path?.uri.fsPath;
 
 	const pathUrlIndex = pathCurrentDocument.fsPath.replace(pathWorkspace!, "");
@@ -80,7 +92,7 @@ const getCurrentPath = () => {
 };
 
 const showMessageWithUrls = (urls: UrlBrowserSync) => {
-	vscode.window.showInformationMessage(`El servidor local es: ${urls.local}`);
+	// vscode.window.showInformationMessage(`El servidor local es: ${urls.local}`);
 	vscode.window.showInformationMessage(`El servidor externo es: ${urls.external}`);
 	vscode.window.showInformationMessage(`El servidor ui externo es: ${urls.uiExternal}`);
 	// vscode.window.showInformationMessage(`El servidor ui es: ${urls.ui}`);

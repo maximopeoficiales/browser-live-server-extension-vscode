@@ -63,6 +63,16 @@
 					"group": "browser-live-server@4"
 				}
 			]
+		},
+		"configuration": {
+			"title": "Browser Live Server",
+			"properties": {
+				"browser-live-server.tokenNgrok": {
+					"type": "string",
+					"default": null,
+					"description": "Especifica el token de Ngrok (https://ngrok.com/). Necesario para el funcionamiento de Ngrok."
+				}
+			}
 		}
 	},
 	"scripts": {
